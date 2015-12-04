@@ -12,19 +12,24 @@ Sectioned RecyclerView allows you to easily split a RecyclerView into sections w
 
 ### Repository
 
+Add this in your root `build.gradle` file (**not** your module `build.gradle` file):
+
 ```gradle
-repositories {
-    maven { url "https://jitpack.io" }
+allprojects {
+	repositories {
+		...
+		maven { url "https://jitpack.io" }
+	}
 }
 ```
 
 ### Dependency
 
+Add this to your module's `build.gradle` file:
+
 ```gradle
 dependencies {
-
-    // ... other dependencies here
-
+    ...
     compile('com.github.afollestad:sectioned-recyclerview:0.1.0') {
         transitive = true
     }
