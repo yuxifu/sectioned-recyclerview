@@ -8,7 +8,8 @@ Sectioned RecyclerView allows you to easily split a RecyclerView into sections w
 
 # Gradle Dependency
 
-[![JitPack](https://img.shields.io/github/release/afollestad/sectioned-recyclerview.svg?label=jitpack)](https://jitpack.io/#afollestad/sectioned-recyclerview)
+[![Release](https://img.shields.io/github/release/afollestad/sectioned-recyclerview.svg?label=jitpack)](https://jitpack.io/#afollestad/sectioned-recyclerview)
+
 [![Build Status](https://travis-ci.org/afollestad/sectioned-recyclerview.svg)](https://travis-ci.org/afollestad/sectioned-recyclerview)
 
 ### Repository
