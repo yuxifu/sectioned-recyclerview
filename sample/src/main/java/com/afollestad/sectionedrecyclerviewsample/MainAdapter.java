@@ -36,9 +36,29 @@ public class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH
     }
 
     @Override
-    public MainVH onCreateViewHolder(ViewGroup parent, boolean header) {
+    public int getItemViewType(int section, int relativePosition, int absolutePosition) {
+        if (section == 1)
+            return 0; // VIEW_TYPE_HEADER is -2, VIEW_TYPE_ITEM is -1. You can return 0 or greater.
+        return super.getItemViewType(section, relativePosition, absolutePosition);
+    }
+
+    @Override
+    public MainVH onCreateViewHolder(ViewGroup parent, int viewType) {
+        int layout;
+        switch (viewType) {
+            case VIEW_TYPE_HEADER:
+                layout = R.layout.list_item_header;
+                break;
+            case VIEW_TYPE_ITEM:
+                layout = R.layout.list_item_main;
+                break;
+            default:
+                layout = R.layout.list_item_main_bold;
+                break;
+        }
+
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(header ? R.layout.list_item_header : R.layout.list_item_main, parent, false);
+                .inflate(layout, parent, false);
         return new MainVH(v);
     }
 

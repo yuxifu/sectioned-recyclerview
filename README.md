@@ -32,7 +32,7 @@ Add this to your module's `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    compile('com.github.afollestad:sectioned-recyclerview:0.1.0') {
+    compile('com.github.afollestad:sectioned-recyclerview:0.2.0') {
         transitive = true
     }
 }
@@ -70,10 +70,10 @@ public class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH
     }
 
     @Override
-    public MainVH onCreateViewHolder(ViewGroup parent, boolean header) {
+    public MainVH onCreateViewHolder(ViewGroup parent, int viewType) {
         // Change inflated layout based on 'header'. 
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(header ? R.layout.header: R.layout.normal, parent, false);
+                .inflate(viewType == VIEW_TYPE_HEADER ? R.layout.header : R.layout.normal, parent, false);
         return new MainVH(v);
     }
 

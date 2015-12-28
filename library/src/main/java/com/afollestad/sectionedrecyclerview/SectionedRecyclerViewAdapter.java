@@ -29,8 +29,6 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
 
     public abstract int getItemCount(int section);
 
-    public abstract VH onCreateViewHolder(ViewGroup parent, boolean header);
-
     public abstract void onBindHeaderViewHolder(VH holder, int section);
 
     public abstract void onBindViewHolder(VH holder, int section, int relativePosition, int absolutePosition);
@@ -76,16 +74,6 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
             count += getItemCount(s) + 1;
         }
         return count;
-    }
-
-    /**
-     * @hide
-     * @deprecated
-     */
-    @Override
-    @Deprecated
-    public final VH onCreateViewHolder(ViewGroup parent, int viewType) {
-        return onCreateViewHolder(parent, viewType == VIEW_TYPE_HEADER);
     }
 
     /**
