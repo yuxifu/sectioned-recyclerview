@@ -1,5 +1,6 @@
 package com.afollestad.sectionedrecyclerview;
 
+import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.GridLayoutManager;
@@ -14,8 +15,8 @@ import java.util.List;
  */
 public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
-    private final static int VIEW_TYPE_HEADER = 0;
-    private final static int VIEW_TYPE_ITEM = 1;
+    protected final static int VIEW_TYPE_HEADER = -2;
+    protected final static int VIEW_TYPE_ITEM = -1;
 
     private final ArrayMap<Integer, Integer> mHeaderLocationMap;
     private GridLayoutManager mLayoutManager;
@@ -61,7 +62,6 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
                 } else {
                     break;
                 }
-                lastSectionIndex = sectionIndex;
             }
             return new int[]{mHeaderLocationMap.get(lastSectionIndex), itemPosition - lastSectionIndex - 1};
         }
@@ -92,14 +92,32 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
      * @hide
      * @deprecated
      */
-    @Deprecated
     @Override
+    @Deprecated
     public final int getItemViewType(int position) {
         if (isHeader(position)) {
-            return VIEW_TYPE_HEADER;
+            return getHeaderViewType(mHeaderLocationMap.get(position));
         } else {
-            return VIEW_TYPE_ITEM;
+            final int[] sectionAndPos = getSectionIndexAndRelativePosition(position);
+            return getItemViewType(sectionAndPos[0],
+                    // offset section view positions
+                    sectionAndPos[1],
+                    position - (sectionAndPos[0] + 1));
         }
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @IntRange(from = 0, to = Integer.MAX_VALUE)
+    public int getHeaderViewType(int section) {
+        //noinspection ResourceType
+        return VIEW_TYPE_HEADER;
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    @IntRange(from = 0, to = Integer.MAX_VALUE)
+    public int getItemViewType(int section, int relativePosition, int absolutePosition) {
+        //noinspection ResourceType
+        return VIEW_TYPE_ITEM;
     }
 
     /**
