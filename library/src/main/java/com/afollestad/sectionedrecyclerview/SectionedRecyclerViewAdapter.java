@@ -70,8 +70,11 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
         int count = 0;
         mHeaderLocationMap.clear();
         for (int s = 0; s < getSectionCount(); s++) {
-            mHeaderLocationMap.put(count, s);
-            count += getItemCount(s) + 1;
+            int itemCount = getItemCount(s);
+            if(itemCount > 0) {
+                mHeaderLocationMap.put(count, s);
+                count += itemCount + 1;
+            }
         }
         return count;
     }
