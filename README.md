@@ -32,7 +32,7 @@ Add this to your module's `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    compile('com.github.afollestad:sectioned-recyclerview:0.2.0') {
+    compile('com.github.afollestad:sectioned-recyclerview:0.2.1') {
         transitive = true
     }
 }
