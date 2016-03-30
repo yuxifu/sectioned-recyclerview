@@ -20,6 +20,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
 
     private final ArrayMap<Integer, Integer> mHeaderLocationMap;
     private GridLayoutManager mLayoutManager;
+    private ArrayMap<Integer, Integer> mSpanMap;
 
     public SectionedRecyclerViewAdapter() {
         mHeaderLocationMap = new ArrayMap<>();
@@ -45,9 +46,17 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
             public int getSpanSize(int position) {
                 if (isHeader(position))
                     return mLayoutManager.getSpanCount();
-                return 1;
+                final int[] sectionAndPos = getSectionIndexAndRelativePosition(position);
+                final int absPos = position - (sectionAndPos[0] + 1);
+                return getRowSpan(mLayoutManager.getSpanCount(),
+                        sectionAndPos[0], sectionAndPos[1], absPos);
             }
         });
+    }
+
+    @SuppressWarnings("UnusedParameters")
+    protected int getRowSpan(int fullSpanSize, int section, int relativePosition, int absolutePosition) {
+        return 1;
     }
 
     // returns section along with offsetted position
@@ -71,7 +80,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
         mHeaderLocationMap.clear();
         for (int s = 0; s < getSectionCount(); s++) {
             int itemCount = getItemCount(s);
-            if(itemCount > 0) {
+            if (itemCount > 0) {
                 mHeaderLocationMap.put(count, s);
                 count += itemCount + 1;
             }
@@ -120,7 +129,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
     public final void onBindViewHolder(VH holder, int position) {
         StaggeredGridLayoutManager.LayoutParams layoutParams = null;
         if (holder.itemView.getLayoutParams() instanceof GridLayoutManager.LayoutParams)
-            layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams = new StaggeredGridLayoutManager.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         else if (holder.itemView.getLayoutParams() instanceof StaggeredGridLayoutManager.LayoutParams)
             layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
         if (isHeader(position)) {
@@ -129,10 +138,10 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
         } else {
             if (layoutParams != null) layoutParams.setFullSpan(false);
             final int[] sectionAndPos = getSectionIndexAndRelativePosition(position);
+            final int absPos = position - (sectionAndPos[0] + 1);
             onBindViewHolder(holder, sectionAndPos[0],
                     // offset section view positions
-                    sectionAndPos[1],
-                    position - (sectionAndPos[0] + 1));
+                    sectionAndPos[1], absPos);
         }
         if (layoutParams != null)
             holder.itemView.setLayoutParams(layoutParams);
