@@ -21,6 +21,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
     private final ArrayMap<Integer, Integer> mHeaderLocationMap;
     private GridLayoutManager mLayoutManager;
     private ArrayMap<Integer, Integer> mSpanMap;
+    private boolean mShowHeadersForEmptySections;
 
     public SectionedRecyclerViewAdapter() {
         mHeaderLocationMap = new ArrayMap<>();
@@ -36,6 +37,15 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
 
     public final boolean isHeader(int position) {
         return mHeaderLocationMap.get(position) != null;
+    }
+
+    /**
+     * Instructs the list view adapter to whether show headers for empty sections or not.
+     *
+     * @param show flag indicating whether headers for empty sections ought to be shown.
+     */
+    public final void shouldShowHeadersForEmptySections(boolean show) {
+        mShowHeadersForEmptySections = show;
     }
 
     public final void setLayoutManager(@Nullable GridLayoutManager lm) {
@@ -80,7 +90,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
         mHeaderLocationMap.clear();
         for (int s = 0; s < getSectionCount(); s++) {
             int itemCount = getItemCount(s);
-            if (itemCount > 0) {
+            if (mShowHeadersForEmptySections || (itemCount > 0)) {
                 mHeaderLocationMap.put(count, s);
                 count += itemCount + 1;
             }
