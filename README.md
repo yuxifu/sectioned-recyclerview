@@ -8,22 +8,12 @@ Sectioned RecyclerView allows you to easily split a RecyclerView into sections w
 
 # Gradle Dependency
 
-[![Release](https://jitpack.io/v/afollestad/sectioned-recyclerview.svg)](https://jitpack.io/#afollestad/sectioned-recyclerview)
+[ ![jCenter](https://api.bintray.com/packages/drummer-aidan/maven/sectioned-recyclerview/images/download.svg) ](https://bintray.com/drummer-aidan/maven/sectioned-recyclerview/_latestVersion)
 [![Build Status](https://travis-ci.org/afollestad/sectioned-recyclerview.svg)](https://travis-ci.org/afollestad/sectioned-recyclerview)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg?style=flat-square)](https://www.apache.org/licenses/LICENSE-2.0.html)
 
-### Repository
-
-Add this in your root `build.gradle` file (**not** your module `build.gradle` file):
-
-```gradle
-allprojects {
-	repositories {
-		...
-		maven { url "https://jitpack.io" }
-	}
-}
-```
+The Gradle dependency is available via [jCenter](https://bintray.com/drummer-aidan/maven/sectioned-recyclerview/view).
+jCenter is the default Maven repository used by Android Studio.
 
 ### Dependency
 
@@ -32,7 +22,7 @@ Add this to your module's `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    compile('com.github.afollestad:sectioned-recyclerview:0.2.2') {
+    compile('com.afollestad:sectioned-recyclerview:0.2.2') {
         transitive = true
     }
 }
