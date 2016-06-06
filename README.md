@@ -22,9 +22,7 @@ Add this to your module's `build.gradle` file:
 ```gradle
 dependencies {
     ...
-    compile('com.afollestad:sectioned-recyclerview:0.2.2') {
-        transitive = true
-    }
+    compile 'com.afollestad:sectioned-recyclerview:0.2.2'
 }
 ```
 
