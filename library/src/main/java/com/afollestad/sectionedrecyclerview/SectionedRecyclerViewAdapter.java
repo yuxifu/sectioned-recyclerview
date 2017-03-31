@@ -103,6 +103,30 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
      */
     @Override
     @Deprecated
+    public long getItemId(int position) {
+        if (isHeader(position)) {
+            int pos = mHeaderLocationMap.get(position);
+            return getHeaderId(pos);
+        } else {
+            int[] sectionAndPos = getSectionIndexAndRelativePosition(position);
+            return getItemId(sectionAndPos[0], sectionAndPos[1]);
+        }
+    }
+
+    public long getHeaderId(int section) {
+        return super.getItemId(section);
+    }
+
+    public long getItemId(int section, int position) {
+        return super.getItemId(position);
+    }
+
+    /**
+     * @hide
+     * @deprecated
+     */
+    @Override
+    @Deprecated
     public final int getItemViewType(int position) {
         if (isHeader(position)) {
             return getHeaderViewType(mHeaderLocationMap.get(position));
