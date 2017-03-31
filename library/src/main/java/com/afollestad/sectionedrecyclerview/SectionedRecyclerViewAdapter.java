@@ -20,7 +20,6 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
 
     private final ArrayMap<Integer, Integer> mHeaderLocationMap;
     private GridLayoutManager mLayoutManager;
-    private ArrayMap<Integer, Integer> mSpanMap;
     private boolean mShowHeadersForEmptySections;
 
     public SectionedRecyclerViewAdapter() {
