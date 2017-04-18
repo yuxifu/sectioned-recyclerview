@@ -38,8 +38,9 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
 
   @Override
   public int getItemViewType(int section, int relativePosition, int absolutePosition) {
-    if (section == 1)
+    if (section == 1) {
       return 0; // VIEW_TYPE_HEADER is -2, VIEW_TYPE_ITEM is -1. You can return 0 or greater.
+    }
     return super.getItemViewType(section, relativePosition, absolutePosition);
   }
 

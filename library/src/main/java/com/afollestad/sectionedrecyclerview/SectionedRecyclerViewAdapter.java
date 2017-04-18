@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 /** @author Aidan Follestad (afollestad) */
-public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewHolder>
+public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolder>
     extends RecyclerView.Adapter<VH> {
 
   protected static final int VIEW_TYPE_HEADER = -2;
@@ -20,9 +20,17 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
   private final ArrayMap<Integer, Integer> headerLocationMap;
   private GridLayoutManager layoutManager;
   private boolean showHeadersForEmptySections;
+  private SectionedViewHolder.PositionDelegate positionDelegate;
 
   public SectionedRecyclerViewAdapter() {
     headerLocationMap = new ArrayMap<>();
+    positionDelegate =
+        new SectionedViewHolder.PositionDelegate() {
+          @Override
+          public ItemCoord relativePosition(int absolutePosition) {
+            return getRelativePosition(absolutePosition);
+          }
+        };
   }
 
   public abstract int getSectionCount();
@@ -49,16 +57,23 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
 
   public final void setLayoutManager(@Nullable GridLayoutManager lm) {
     layoutManager = lm;
-    if (lm == null) return;
+    if (lm == null) {
+      return;
+    }
     lm.setSpanSizeLookup(
         new GridLayoutManager.SpanSizeLookup() {
           @Override
           public int getSpanSize(int position) {
-            if (isHeader(position)) return layoutManager.getSpanCount();
-            final int[] sectionAndPos = getSectionIndexAndRelativePosition(position);
-            final int absPos = position - (sectionAndPos[0] + 1);
+            if (isHeader(position)) {
+              return layoutManager.getSpanCount();
+            }
+            ItemCoord sectionAndPos = getRelativePosition(position);
+            int absPos = position - (sectionAndPos.section() + 1);
             return getRowSpan(
-                layoutManager.getSpanCount(), sectionAndPos[0], sectionAndPos[1], absPos);
+                layoutManager.getSpanCount(),
+                sectionAndPos.section(),
+                sectionAndPos.relativePos(),
+                absPos);
           }
         });
   }
@@ -69,20 +84,19 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
     return 1;
   }
 
-  // returns section along with offsetted position
-  private int[] getSectionIndexAndRelativePosition(int itemPosition) {
+  /** Converts an absolute position to a relative position and section. */
+  public ItemCoord getRelativePosition(int absolutePosition) {
     synchronized (headerLocationMap) {
       Integer lastSectionIndex = -1;
-      for (final Integer sectionIndex : headerLocationMap.keySet()) {
-        if (itemPosition > sectionIndex) {
+      for (Integer sectionIndex : headerLocationMap.keySet()) {
+        if (absolutePosition > sectionIndex) {
           lastSectionIndex = sectionIndex;
         } else {
           break;
         }
       }
-      return new int[] {
-        headerLocationMap.get(lastSectionIndex), itemPosition - lastSectionIndex - 1
-      };
+      return new ItemCoord(
+          headerLocationMap.get(lastSectionIndex), absolutePosition - lastSectionIndex - 1);
     }
   }
 
@@ -111,8 +125,8 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
       int pos = headerLocationMap.get(position);
       return getHeaderId(pos);
     } else {
-      int[] sectionAndPos = getSectionIndexAndRelativePosition(position);
-      return getItemId(sectionAndPos[0], sectionAndPos[1]);
+      ItemCoord sectionAndPos = getRelativePosition(position);
+      return getItemId(sectionAndPos.section(), sectionAndPos.relativePos());
     }
   }
 
@@ -134,12 +148,12 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
     if (isHeader(position)) {
       return getHeaderViewType(headerLocationMap.get(position));
     } else {
-      final int[] sectionAndPos = getSectionIndexAndRelativePosition(position);
+      ItemCoord sectionAndPos = getRelativePosition(position);
       return getItemViewType(
-          sectionAndPos[0],
+          sectionAndPos.section(),
           // offset section view positions
-          sectionAndPos[1],
-          position - (sectionAndPos[0] + 1));
+          sectionAndPos.relativePos(),
+          position - (sectionAndPos.section() + 1));
     }
   }
 
@@ -164,28 +178,39 @@ public abstract class SectionedRecyclerViewAdapter<VH extends RecyclerView.ViewH
   @Override
   @Deprecated
   public final void onBindViewHolder(VH holder, int position) {
+    holder.setPositionDelegate(positionDelegate);
+
     StaggeredGridLayoutManager.LayoutParams layoutParams = null;
     if (holder.itemView.getLayoutParams() instanceof GridLayoutManager.LayoutParams)
       layoutParams =
           new StaggeredGridLayoutManager.LayoutParams(
               ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-    else if (holder.itemView.getLayoutParams() instanceof StaggeredGridLayoutManager.LayoutParams)
+    else if (holder.itemView.getLayoutParams() instanceof StaggeredGridLayoutManager.LayoutParams) {
       layoutParams = (StaggeredGridLayoutManager.LayoutParams) holder.itemView.getLayoutParams();
+    }
+
     if (isHeader(position)) {
-      if (layoutParams != null) layoutParams.setFullSpan(true);
+      if (layoutParams != null) {
+        layoutParams.setFullSpan(true);
+      }
       onBindHeaderViewHolder(holder, headerLocationMap.get(position));
     } else {
-      if (layoutParams != null) layoutParams.setFullSpan(false);
-      final int[] sectionAndPos = getSectionIndexAndRelativePosition(position);
-      final int absPos = position - (sectionAndPos[0] + 1);
+      if (layoutParams != null) {
+        layoutParams.setFullSpan(false);
+      }
+      ItemCoord sectionAndPos = getRelativePosition(position);
+      int absPos = position - (sectionAndPos.section() + 1);
       onBindViewHolder(
           holder,
-          sectionAndPos[0],
+          sectionAndPos.section(),
           // offset section view positions
-          sectionAndPos[1],
+          sectionAndPos.relativePos(),
           absPos);
     }
-    if (layoutParams != null) holder.itemView.setLayoutParams(layoutParams);
+
+    if (layoutParams != null) {
+      holder.itemView.setLayoutParams(layoutParams);
+    }
   }
 
   /**
