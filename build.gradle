@@ -1,16 +1,19 @@
+apply from: './dependencies.gradle'
+
 buildscript {
+    apply from: './dependencies.gradle'
+
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.2'
+        classpath 'com.android.tools.build:gradle:' + versions.gradlePlugin
     }
 }
 
 allprojects {
     repositories {
         jcenter()
-        maven { url 'https://dl.bintray.com/andrew-quebe/maven' }
     }
 }
 
