@@ -97,6 +97,14 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
     return collapsedSectionMap.get(section) == null;
   }
 
+  public final int getSectionHeaderIndex(int section) {
+    Integer index = headerLocationMap.get(section);
+    if (index == null) {
+      return -1;
+    }
+    return index;
+  }
+
   public final void shouldShowHeadersForEmptySections(boolean show) {
     showHeadersForEmptySections = show;
   }
