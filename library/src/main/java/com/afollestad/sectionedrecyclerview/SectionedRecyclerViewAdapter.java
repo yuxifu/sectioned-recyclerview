@@ -124,7 +124,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
         });
   }
 
-  private int getRowSpan(
+  protected int getRowSpan(
       int fullSpanSize, int section, int relativePosition, int absolutePosition) {
     return 1;
   }
