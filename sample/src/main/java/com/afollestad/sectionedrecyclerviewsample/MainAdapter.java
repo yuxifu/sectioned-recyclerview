@@ -1,12 +1,14 @@
 package com.afollestad.sectionedrecyclerviewsample;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.sectionedrecyclerview.SectionedRecyclerViewAdapter;
+import com.afollestad.sectionedrecyclerview.SectionedViewHolder;
 
 /** @author Aidan Follestad (afollestad) */
 class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
@@ -18,15 +20,22 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
 
   @Override
   public int getItemCount(int section) {
-    if (section % 2 == 0) {
-        return 4; // even sections get 4 items
+    switch (section) {
+      case 0:
+        return 4;
+      case 1:
+        return 0;
+      case 2:
+        return 10;
+      default:
+        return 6;
     }
-    return 8; // odd get 8
   }
 
   @Override
-  public void onBindHeaderViewHolder(MainVH holder, int section) {
+  public void onBindHeaderViewHolder(MainVH holder, int section, boolean expanded) {
     holder.title.setText(String.format("Section %d", section));
+    holder.caret.setImageResource(expanded ? R.drawable.ic_collapse : R.drawable.ic_expand);
   }
 
   @Override
@@ -60,16 +69,36 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
     }
 
     View v = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
-    return new MainVH(v);
+    return new MainVH(v, this);
   }
 
-  static class MainVH extends RecyclerView.ViewHolder {
+  static class MainVH extends SectionedViewHolder implements View.OnClickListener {
 
+    Toast toast;
     final TextView title;
+    final ImageView caret;
+    final MainAdapter adapter;
 
-    MainVH(View itemView) {
+    MainVH(View itemView, MainAdapter adapter) {
       super(itemView);
-      title = (TextView) itemView.findViewById(R.id.title);
+      this.title = (TextView) itemView.findViewById(R.id.title);
+      this.caret = (ImageView) itemView.findViewById(R.id.caret);
+      this.adapter = adapter;
+      itemView.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View view) {
+      if (isHeader()) {
+        adapter.toggleSectionExpanded(getRelativePosition().section());
+      } else {
+        if (toast != null) {
+          toast.cancel();
+        }
+        toast =
+            Toast.makeText(view.getContext(), getRelativePosition().toString(), Toast.LENGTH_SHORT);
+        toast.show();
+      }
     }
   }
 }

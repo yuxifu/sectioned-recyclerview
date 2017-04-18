@@ -2,7 +2,7 @@
 
 Sectioned RecyclerView allows you to easily split a RecyclerView into sections with headers.
 
-![Screenshots](https://raw.githubusercontent.com/afollestad/sectioned-recyclerview/master/art/showcase.png)
+<img src="https://raw.githubusercontent.com/afollestad/sectioned-recyclerview/master/art/showcase1.png" width="400" />
 
 ---
 
@@ -44,7 +44,7 @@ public class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH
     }
 
     @Override
-    public void onBindHeaderViewHolder(MainVH holder, int section) {
+    public void onBindHeaderViewHolder(MainVH holder, int section, boolean expanded) {
         // Setup header view.
     }
 
@@ -65,7 +65,7 @@ public class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH
         return new MainVH(v);
     }
 
-    public static class MainVH extends RecyclerView.ViewHolder {
+    public static class MainVH extends SectionedViewHolder {
 
         public MainVH(View itemView) {
             super(itemView);

@@ -1,5 +1,7 @@
 <resources>
 
     <string name="app_name">SectionedRV Sample</string>
+  <string name="hide_empty_sections">Hide Empty Sections</string>
+  <string name="click_headers_to_expand">Click Headers to Expand/Collapse</string>
 
 </resources>
