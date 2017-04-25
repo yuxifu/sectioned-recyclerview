@@ -21,11 +21,11 @@ public abstract class SectionedViewHolder extends RecyclerView.ViewHolder {
     this.positionDelegate = positionDelegate;
   }
 
-  public ItemCoord getRelativePosition() {
+  protected ItemCoord getRelativePosition() {
     return positionDelegate.relativePosition(getAdapterPosition());
   }
 
-  public boolean isHeader() {
+  protected boolean isHeader() {
     return positionDelegate.isHeader(getAdapterPosition());
   }
 }

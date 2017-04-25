@@ -2,7 +2,6 @@ package com.afollestad.sectionedrecyclerview;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
-import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -13,34 +12,19 @@ import java.util.List;
 
 /** @author Aidan Follestad (afollestad) */
 public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolder>
-    extends RecyclerView.Adapter<VH> {
+    extends RecyclerView.Adapter<VH> implements ItemProvider {
 
   private static final String TAG = "SectionedRVAdapter";
 
   protected static final int VIEW_TYPE_HEADER = -2;
   protected static final int VIEW_TYPE_ITEM = -1;
 
-  private final ArrayMap<Integer, Integer> headerLocationMap;
-  private final ArrayMap<Integer, Boolean> collapsedSectionMap;
+  private PositionManager positionManager;
   private GridLayoutManager layoutManager;
   private boolean showHeadersForEmptySections;
-  private SectionedViewHolder.PositionDelegate positionDelegate;
 
   public SectionedRecyclerViewAdapter() {
-    headerLocationMap = new ArrayMap<>();
-    collapsedSectionMap = new ArrayMap<>(0);
-    positionDelegate =
-        new SectionedViewHolder.PositionDelegate() {
-          @Override
-          public ItemCoord relativePosition(int absolutePosition) {
-            return getRelativePosition(absolutePosition);
-          }
-
-          @Override
-          public boolean isHeader(int absolutePosition) {
-            return SectionedRecyclerViewAdapter.this.isHeader(absolutePosition);
-          }
-        };
+    positionManager = new PositionManager();
   }
 
   public void notifySectionChanged(@IntRange(from = 0, to = Integer.MAX_VALUE) int section) {
@@ -48,8 +32,8 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
       throw new IllegalArgumentException(
           "Section " + section + " is out of range of existing sections.");
     }
-    Integer sectionHeaderIndex = headerLocationMap.get(section);
-    if (sectionHeaderIndex == null) {
+    Integer sectionHeaderIndex = positionManager.sectionHeaderIndex(section);
+    if (sectionHeaderIndex == -1) {
       throw new IllegalStateException("No header position mapped for section " + section);
     }
     int sectionItemCount = getItemCount(section);
@@ -63,21 +47,18 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
   }
 
   public void expandSection(int section) {
-    collapsedSectionMap.remove(section);
+    positionManager.expandSection(section);
     notifyDataSetChanged();
   }
 
   public void collapseSection(int section) {
-    collapsedSectionMap.put(section, true);
+    positionManager.collapseSection(section);
     notifyDataSetChanged();
   }
 
   public void toggleSectionExpanded(int section) {
-    if (collapsedSectionMap.get(section) != null) {
-      expandSection(section);
-    } else {
-      collapseSection(section);
-    }
+    positionManager.toggleSectionExpanded(section);
+    notifyDataSetChanged();
   }
 
   public abstract int getSectionCount();
@@ -90,19 +71,15 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
       VH holder, int section, int relativePosition, int absolutePosition);
 
   public final boolean isHeader(int position) {
-    return headerLocationMap.get(position) != null;
+    return positionManager.isHeader(position);
   }
 
   public final boolean isSectionExpanded(int section) {
-    return collapsedSectionMap.get(section) == null;
+    return positionManager.isSectionExpanded(section);
   }
 
   public final int getSectionHeaderIndex(int section) {
-    Integer index = headerLocationMap.get(section);
-    if (index == null) {
-      return -1;
-    }
-    return index;
+    return positionManager.sectionHeaderIndex(section);
   }
 
   public final void shouldShowHeadersForEmptySections(boolean show) {
@@ -139,41 +116,33 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
 
   /** Converts an absolute position to a relative position and section. */
   public ItemCoord getRelativePosition(int absolutePosition) {
-    Integer absHeaderLoc = headerLocationMap.get(absolutePosition);
-    if (absHeaderLoc != null) {
-      return new ItemCoord(absHeaderLoc, -1);
-    }
-    synchronized (headerLocationMap) {
-      Integer lastSectionIndex = -1;
-      for (Integer sectionIndex : headerLocationMap.keySet()) {
-        if (absolutePosition > sectionIndex) {
-          lastSectionIndex = sectionIndex;
-        } else {
-          break;
-        }
-      }
-      return new ItemCoord(
-          headerLocationMap.get(lastSectionIndex), absolutePosition - lastSectionIndex - 1);
-    }
+    return positionManager.relativePosition(absolutePosition);
+  }
+
+  /**
+   * Converts a relative position (index inside of a section) to an absolute position (index out of
+   * all items and headers).
+   */
+  public int getAbsolutePosition(int sectionIndex, int relativeIndex) {
+    return positionManager.absolutePosition(sectionIndex, relativeIndex);
+  }
+
+  /**
+   * Converts a relative position (index inside of a section) to an absolute position (index out of
+   * all items and headers).
+   */
+  public int getAbsolutePosition(ItemCoord relativePosition) {
+    return positionManager.absolutePosition(relativePosition);
   }
 
   @Override
   public final int getItemCount() {
-    int count = 0;
-    headerLocationMap.clear();
-    for (int s = 0; s < getSectionCount(); s++) {
-      int itemCount = getItemCount(s);
-      if (collapsedSectionMap.get(s) != null) {
-        headerLocationMap.put(count, s);
-        count += 1;
-        continue;
-      }
-      if (showHeadersForEmptySections || (itemCount > 0)) {
-        headerLocationMap.put(count, s);
-        count += itemCount + 1;
-      }
-    }
-    return count;
+    return positionManager.invalidate(this);
+  }
+
+  @Override
+  public final boolean showHeadersForEmptySections() {
+    return showHeadersForEmptySections;
   }
 
   /**
@@ -184,7 +153,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
   @Deprecated
   public long getItemId(int position) {
     if (isHeader(position)) {
-      int pos = headerLocationMap.get(position);
+      int pos = positionManager.sectionId(position);
       return getHeaderId(pos);
     } else {
       ItemCoord sectionAndPos = getRelativePosition(position);
@@ -208,7 +177,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
   @Deprecated
   public final int getItemViewType(int position) {
     if (isHeader(position)) {
-      return getHeaderViewType(headerLocationMap.get(position));
+      return getHeaderViewType(positionManager.sectionId(position));
     } else {
       ItemCoord sectionAndPos = getRelativePosition(position);
       return getItemViewType(
@@ -238,7 +207,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
   @Override
   @Deprecated
   public final void onBindViewHolder(VH holder, int position) {
-    holder.setPositionDelegate(positionDelegate);
+    holder.setPositionDelegate(positionManager);
 
     StaggeredGridLayoutManager.LayoutParams layoutParams = null;
     if (holder.itemView.getLayoutParams() instanceof GridLayoutManager.LayoutParams)
@@ -253,7 +222,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
       if (layoutParams != null) {
         layoutParams.setFullSpan(true);
       }
-      int sectionIndex = headerLocationMap.get(position);
+      int sectionIndex = positionManager.sectionId(position);
       onBindHeaderViewHolder(holder, sectionIndex, isSectionExpanded(sectionIndex));
     } else {
       if (layoutParams != null) {
