@@ -43,7 +43,45 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
     }
     int startPosition = sectionHeaderIndex + 1;
     Log.d(TAG, "Invalidating " + sectionItemCount + " items starting at index " + startPosition);
+    notifyItemRangeChanged(startPosition, sectionItemCount);
+  }
+
+  public void notifySectionRemoved(@IntRange(from = 0, to = Integer.MAX_VALUE) int section) {
+    if (section < 0 || section > getSectionCount() - 1) {
+      throw new IllegalArgumentException(
+              "Section " + section + " is out of range of existing sections.");
+    }
+    Integer sectionHeaderIndex = positionManager.sectionHeaderIndex(section);
+    if (sectionHeaderIndex == -1) {
+      throw new IllegalStateException("No header position mapped for section " + section);
+    }
+    int sectionItemCount = getItemCount(section);
+    if (sectionItemCount == 0) {
+      Log.d(TAG, "There are no items in section " + section + " to notify.");
+      return;
+    }
+    int startPosition = sectionHeaderIndex + 1;
+    Log.d(TAG, "Invalidating " + sectionItemCount + " items starting at index " + startPosition);
     notifyItemRangeRemoved(startPosition, sectionItemCount);
+  }
+
+  public void notifySectionInserted(@IntRange(from = 0, to = Integer.MAX_VALUE) int section) {
+    if (section < 0 || section > getSectionCount() - 1) {
+      throw new IllegalArgumentException(
+              "Section " + section + " is out of range of existing sections.");
+    }
+    Integer sectionHeaderIndex = positionManager.sectionHeaderIndex(section);
+    if (sectionHeaderIndex == -1) {
+      throw new IllegalStateException("No header position mapped for section " + section);
+    }
+    int sectionItemCount = getItemCount(section);
+    if (sectionItemCount == 0) {
+      Log.d(TAG, "There are no items in section " + section + " to notify.");
+      return;
+    }
+    int startPosition = sectionHeaderIndex + 1;
+    Log.d(TAG, "Invalidating " + sectionItemCount + " items starting at index " + startPosition);
+    notifyItemRangeInserted(startPosition, sectionItemCount);
   }
 
   public void expandSection(int section) {
@@ -58,7 +96,12 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
 
   public void toggleSectionExpanded(int section) {
     positionManager.toggleSectionExpanded(section);
-    notifySectionChanged(section);
+
+    if (positionManager.isSectionExpanded(section)) {
+      notifySectionInserted(section);
+    } else {
+      notifySectionRemoved(section);
+    }
   }
 
 
