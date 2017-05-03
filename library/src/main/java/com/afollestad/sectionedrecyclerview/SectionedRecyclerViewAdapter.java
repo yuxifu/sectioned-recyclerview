@@ -102,6 +102,8 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
     } else {
       notifySectionRemoved(section);
     }
+
+    notifyItemChanged(getSectionHeaderIndex(section));
   }
 
 
