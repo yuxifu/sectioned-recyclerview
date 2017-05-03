@@ -43,7 +43,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
     }
     int startPosition = sectionHeaderIndex + 1;
     Log.d(TAG, "Invalidating " + sectionItemCount + " items starting at index " + startPosition);
-    notifyItemRangeChanged(startPosition, sectionItemCount);
+    notifyItemRangeRemoved(startPosition, sectionItemCount);
   }
 
   public void expandSection(int section) {
