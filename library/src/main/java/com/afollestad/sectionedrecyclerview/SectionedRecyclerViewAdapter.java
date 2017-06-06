@@ -2,6 +2,7 @@ package com.afollestad.sectionedrecyclerview;
 
 import android.support.annotation.IntRange;
 import android.support.annotation.Nullable;
+import android.support.annotation.RestrictTo;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -10,7 +11,10 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-/** @author Aidan Follestad (afollestad) */
+/**
+ * @author Aidan Follestad (afollestad)
+ */
+@SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolder>
     extends RecyclerView.Adapter<VH> implements ItemProvider {
 
@@ -48,7 +52,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
   public void notifySectionRemoved(@IntRange(from = 0, to = Integer.MAX_VALUE) int section) {
     if (section < 0 || section > getSectionCount() - 1) {
       throw new IllegalArgumentException(
-              "Section " + section + " is out of range of existing sections.");
+          "Section " + section + " is out of range of existing sections.");
     }
     Integer sectionHeaderIndex = positionManager.sectionHeaderIndex(section);
     if (sectionHeaderIndex == -1) {
@@ -67,7 +71,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
   public void notifySectionInserted(@IntRange(from = 0, to = Integer.MAX_VALUE) int section) {
     if (section < 0 || section > getSectionCount() - 1) {
       throw new IllegalArgumentException(
-              "Section " + section + " is out of range of existing sections.");
+          "Section " + section + " is out of range of existing sections.");
     }
     Integer sectionHeaderIndex = positionManager.sectionHeaderIndex(section);
     if (sectionHeaderIndex == -1) {
@@ -154,12 +158,15 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
         });
   }
 
+  @SuppressWarnings("UnusedParameters")
   protected int getRowSpan(
       int fullSpanSize, int section, int relativePosition, int absolutePosition) {
     return 1;
   }
 
-  /** Converts an absolute position to a relative position and section. */
+  /**
+   * Converts an absolute position to a relative position and section.
+   */
   public ItemCoord getRelativePosition(int absolutePosition) {
     return positionManager.relativePosition(absolutePosition);
   }
@@ -196,6 +203,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
    */
   @Override
   @Deprecated
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public long getItemId(int position) {
     if (isHeader(position)) {
       int pos = positionManager.sectionId(position);
@@ -220,6 +228,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
    */
   @Override
   @Deprecated
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public final int getItemViewType(int position) {
     if (isHeader(position)) {
       return getHeaderViewType(positionManager.sectionId(position));
@@ -251,6 +260,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
    */
   @Override
   @Deprecated
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public final void onBindViewHolder(VH holder, int position) {
     holder.setPositionDelegate(positionManager);
 
@@ -293,7 +303,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
    * @deprecated
    */
   @Deprecated
-  @Override
+  @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
   public final void onBindViewHolder(VH holder, int position, List<Object> payloads) {
     super.onBindViewHolder(holder, position, payloads);
   }
