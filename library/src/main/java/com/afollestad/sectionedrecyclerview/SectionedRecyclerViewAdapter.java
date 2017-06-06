@@ -284,13 +284,13 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
         layoutParams.setFullSpan(false);
       }
       ItemCoord sectionAndPos = getRelativePosition(position);
-      int absPos = position - (sectionAndPos.section() + 1);
+      int absolutePosition = getAbsolutePosition(sectionAndPos);
       onBindViewHolder(
           holder,
           sectionAndPos.section(),
           // offset section view positions
           sectionAndPos.relativePos(),
-          absPos);
+          absolutePosition);
     }
 
     if (layoutParams != null) {
