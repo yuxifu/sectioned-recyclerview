@@ -97,6 +97,20 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
     notifyDataSetChanged();
   }
 
+  public void expandAllSections() {
+    for (int i = 0; i < getSectionCount(); i++) {
+      positionManager.expandSection(i);
+    }
+    notifyDataSetChanged();
+  }
+
+  public void collapseAllSections() {
+    for (int i = 0; i < getSectionCount(); i++) {
+      positionManager.collapseSection(i);
+    }
+    notifyDataSetChanged();
+  }
+
   public void toggleSectionExpanded(int section) {
     positionManager.toggleSectionExpanded(section);
 
