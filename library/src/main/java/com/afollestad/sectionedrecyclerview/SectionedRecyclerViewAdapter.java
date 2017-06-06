@@ -41,9 +41,8 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
       Log.d(TAG, "There are no items in section " + section + " to notify.");
       return;
     }
-    int startPosition = sectionHeaderIndex + 1;
-    Log.d(TAG, "Invalidating " + sectionItemCount + " items starting at index " + startPosition);
-    notifyItemRangeChanged(startPosition, sectionItemCount);
+    Log.d(TAG, "Invalidating " + sectionItemCount + " items starting at index " + sectionHeaderIndex);
+    notifyItemRangeChanged(sectionHeaderIndex, sectionItemCount);
   }
 
   public void notifySectionRemoved(@IntRange(from = 0, to = Integer.MAX_VALUE) int section) {
