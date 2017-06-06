@@ -2,7 +2,7 @@
 
 Sectioned RecyclerView allows you to easily split a RecyclerView into sections with headers.
 
-<img src="https://raw.githubusercontent.com/afollestad/sectioned-recyclerview/master/art/showcase1.png" width="300" />
+<img src="https://raw.githubusercontent.com/afollestad/sectioned-recyclerview/master/art/showcase2.png" width="300" />
 
 ---
 
@@ -22,7 +22,7 @@ Add this to your module's `build.gradle` file:
 ```gradle
 dependencies {
     // ... other dependencies
-    compile 'com.afollestad:sectioned-recyclerview:0.4.1'
+    compile 'com.afollestad:sectioned-recyclerview:0.4.2'
 }
 ```
 
@@ -100,6 +100,8 @@ MainAdapter adapter = // ...
 adapter.expandSection(int);
 adapter.collapseSection(int);
 adapter.toggleSectionExpanded(int);
+adapter.expandAllSections();
+adapter.collapseAllSections();
 boolean isExpanded = adapter.isSectionExpanded(int);
 ```
 
