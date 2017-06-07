@@ -29,6 +29,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
 
   public SectionedRecyclerViewAdapter() {
     positionManager = new PositionManager();
+    positionManager.invalidate(this);
   }
 
   public void notifySectionChanged(@IntRange(from = 0, to = Integer.MAX_VALUE) int section) {

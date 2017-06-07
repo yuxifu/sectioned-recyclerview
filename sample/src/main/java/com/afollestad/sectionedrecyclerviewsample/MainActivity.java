@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     list.setLayoutManager(manager);
     adapter.setLayoutManager(manager);
     adapter.shouldShowHeadersForEmptySections(false);
+    adapter.collapseAllSections();
     list.setAdapter(adapter);
   }
 
