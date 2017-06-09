@@ -2,7 +2,7 @@
 
 Sectioned RecyclerView allows you to easily split a RecyclerView into sections with headers.
 
-<img src="https://raw.githubusercontent.com/afollestad/sectioned-recyclerview/master/art/showcase2.png" width="300" />
+<img src="https://raw.githubusercontent.com/afollestad/sectioned-recyclerview/master/art/showcase3.png" width="600" />
 
 ---
 
