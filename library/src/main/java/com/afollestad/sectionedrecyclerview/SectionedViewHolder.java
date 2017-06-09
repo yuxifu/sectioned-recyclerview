@@ -24,9 +24,15 @@ public abstract class SectionedViewHolder extends RecyclerView.ViewHolder {
     return positionDelegate.isHeader(getAdapterPosition());
   }
 
+  protected boolean isFooter() {
+    return positionDelegate.isFooter(getAdapterPosition());
+  }
+
   interface PositionDelegate {
     ItemCoord relativePosition(int absolutePosition);
 
     boolean isHeader(int absolutePosition);
+
+    boolean isFooter(int absolutePosition);
   }
 }

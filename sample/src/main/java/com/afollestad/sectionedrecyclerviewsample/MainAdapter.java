@@ -1,5 +1,6 @@
 package com.afollestad.sectionedrecyclerviewsample;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import com.afollestad.sectionedrecyclerview.SectionedRecyclerViewAdapter;
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder;
 
 /** @author Aidan Follestad (afollestad) */
+@SuppressLint("DefaultLocale")
 class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
 
   @Override
@@ -34,8 +36,13 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
 
   @Override
   public void onBindHeaderViewHolder(MainVH holder, int section, boolean expanded) {
-    holder.title.setText(String.format("Section %d", section));
+    holder.title.setText(String.format("Section Header %d", section));
     holder.caret.setImageResource(expanded ? R.drawable.ic_collapse : R.drawable.ic_expand);
+  }
+
+  @Override
+  public void onBindFooterViewHolder(MainVH holder, int section) {
+    holder.title.setText(String.format("Section footer %d", section));
   }
 
   @Override
@@ -48,7 +55,9 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
   @Override
   public int getItemViewType(int section, int relativePosition, int absolutePosition) {
     if (section == 1) {
-      return 0; // VIEW_TYPE_HEADER is -2, VIEW_TYPE_ITEM is -1. You can return 0 or greater.
+      // VIEW_TYPE_FOOTER is -3, VIEW_TYPE_HEADER is -2, VIEW_TYPE_ITEM is -1.
+      // You can return 0 or greater.
+      return 0;
     }
     return super.getItemViewType(section, relativePosition, absolutePosition);
   }
@@ -63,7 +72,11 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
       case VIEW_TYPE_ITEM:
         layout = R.layout.list_item_main;
         break;
+      case VIEW_TYPE_FOOTER:
+        layout = R.layout.list_item_footer;
+        break;
       default:
+        // Our custom item, which is the 0 returned in getItemViewType() above
         layout = R.layout.list_item_main_bold;
         break;
     }
@@ -89,6 +102,11 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
 
     @Override
     public void onClick(View view) {
+      if(isFooter()) {
+        // ignore footer clicks
+        return;
+      }
+
       if (isHeader()) {
         adapter.toggleSectionExpanded(getRelativePosition().section());
       } else {

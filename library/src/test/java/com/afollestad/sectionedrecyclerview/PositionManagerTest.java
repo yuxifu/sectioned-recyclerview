@@ -9,10 +9,11 @@ import static junit.framework.Assert.fail;
 public class PositionManagerTest {
 
   private PositionManager positionManager;
-  private boolean showEmptySections;
+  private boolean showFooters;
 
   @Before
   public void before() {
+    showFooters = false;
     positionManager = new PositionManager();
     assertThat(positionManager.hasInvalidated()).isFalse();
     invalidate();
@@ -33,7 +34,12 @@ public class PositionManagerTest {
 
           @Override
           public boolean showHeadersForEmptySections() {
-            return showEmptySections;
+            return true;
+          }
+
+          @Override
+          public boolean showFooters() {
+            return showFooters;
           }
         });
   }
@@ -60,21 +66,88 @@ public class PositionManagerTest {
   }
 
   @Test
-  public void test_section_id() {
+  public void test_section_id_no_footers() {
+    // Header 0
+    // 1
+    // 2
+    // 3
+    // 4
+    // 5
+    // Header 6
+    // 7
+    // 8
+    // 9
+    // 10
+    // 11
+    assertThat(positionManager.sectionId(-1)).isEqualTo(-1);
     assertThat(positionManager.sectionId(0)).isEqualTo(0);
+    assertThat(positionManager.sectionId(1)).isEqualTo(-1);
+    assertThat(positionManager.sectionId(5)).isEqualTo(-1);
     assertThat(positionManager.sectionId(6)).isEqualTo(1);
+    assertThat(positionManager.sectionId(7)).isEqualTo(-1);
     assertThat(positionManager.sectionId(20)).isEqualTo(-1);
   }
 
   @Test
-  public void test_header_index() {
+  public void test_section_id_with_footers() {
+    // Header 0
+    // 1
+    // 2
+    // 3
+    // 4
+    // 5
+    // Footer 6
+    // Header 7
+    // 8
+    // 9
+    // 10
+    // 11
+    // 12
+    // Footer 13
+    showFooters = true;
+    invalidate();
+    assertThat(positionManager.sectionId(-1)).isEqualTo(-1);
+    assertThat(positionManager.sectionId(0)).isEqualTo(0);
+    assertThat(positionManager.sectionId(1)).isEqualTo(-1);
+    assertThat(positionManager.sectionId(6)).isEqualTo(-1);
+    assertThat(positionManager.sectionId(7)).isEqualTo(1);
+    assertThat(positionManager.sectionId(8)).isEqualTo(-1);
+    assertThat(positionManager.sectionId(20)).isEqualTo(-1);
+  }
+
+  @Test
+  public void test_footer_id() {
+    showFooters = true;
+    invalidate();
+    assertThat(positionManager.footerId(5)).isEqualTo(-1);
+    assertThat(positionManager.footerId(6)).isEqualTo(0);
+    assertThat(positionManager.footerId(7)).isEqualTo(-1);
+    assertThat(positionManager.footerId(12)).isEqualTo(-1);
+    assertThat(positionManager.footerId(13)).isEqualTo(1);
+    assertThat(positionManager.footerId(14)).isEqualTo(-1);
+    assertThat(positionManager.footerId(20)).isEqualTo(-1);
+  }
+
+  @Test
+  public void test_header_index_no_footers() {
+    assertThat(positionManager.sectionHeaderIndex(-1)).isEqualTo(-1);
     assertThat(positionManager.sectionHeaderIndex(0)).isEqualTo(0);
     assertThat(positionManager.sectionHeaderIndex(1)).isEqualTo(6);
     assertThat(positionManager.sectionHeaderIndex(2)).isEqualTo(-1);
   }
 
   @Test
-  public void test_relative_pos() {
+  public void test_header_index_with_footers() {
+    showFooters = true;
+    invalidate();
+    assertThat(positionManager.sectionHeaderIndex(-1)).isEqualTo(-1);
+    assertThat(positionManager.sectionHeaderIndex(0)).isEqualTo(0);
+    assertThat(positionManager.sectionHeaderIndex(1)).isEqualTo(7);
+    assertThat(positionManager.sectionHeaderIndex(2)).isEqualTo(-1);
+  }
+
+  @Test
+  public void test_relative_pos_no_footers() {
     assertThat(positionManager.relativePosition(0)).isEqualTo(new ItemCoord(0, -1));
     assertThat(positionManager.relativePosition(1)).isEqualTo(new ItemCoord(0, 0));
     assertThat(positionManager.relativePosition(3)).isEqualTo(new ItemCoord(0, 2));
@@ -85,7 +158,21 @@ public class PositionManagerTest {
   }
 
   @Test
-  public void test_absolute_pos() {
+  public void test_relative_pos_with_footers() {
+    showFooters = true;
+    invalidate();
+
+    assertThat(positionManager.relativePosition(0)).isEqualTo(new ItemCoord(0, -1));
+    assertThat(positionManager.relativePosition(1)).isEqualTo(new ItemCoord(0, 0));
+    assertThat(positionManager.relativePosition(3)).isEqualTo(new ItemCoord(0, 2));
+
+    assertThat(positionManager.relativePosition(7)).isEqualTo(new ItemCoord(1, -1));
+    assertThat(positionManager.relativePosition(8)).isEqualTo(new ItemCoord(1, 0));
+    assertThat(positionManager.relativePosition(12)).isEqualTo(new ItemCoord(1, 4));
+  }
+
+  @Test
+  public void test_absolute_pos_no_footers() {
     assertThat(positionManager.absolutePosition(new ItemCoord(0, 0))).isEqualTo(1);
     assertThat(positionManager.absolutePosition(new ItemCoord(0, 1))).isEqualTo(2);
     assertThat(positionManager.absolutePosition(new ItemCoord(0, 2))).isEqualTo(3);
@@ -99,6 +186,32 @@ public class PositionManagerTest {
     assertThat(positionManager.absolutePosition(new ItemCoord(1, 2))).isEqualTo(9);
     assertThat(positionManager.absolutePosition(new ItemCoord(1, 3))).isEqualTo(10);
     assertThat(positionManager.absolutePosition(new ItemCoord(1, 4))).isEqualTo(11);
+    assertThat(positionManager.absolutePosition(new ItemCoord(1, 5))).isEqualTo(-1);
+    assertThat(positionManager.absolutePosition(new ItemCoord(1, 6))).isEqualTo(-1);
+
+    assertThat(positionManager.absolutePosition(new ItemCoord(2, 6))).isEqualTo(-1);
+    assertThat(positionManager.absolutePosition(new ItemCoord(3, 3))).isEqualTo(-1);
+    assertThat(positionManager.absolutePosition(new ItemCoord(-5, 3))).isEqualTo(-1);
+  }
+
+  @Test
+  public void test_absolute_pos_with_footers() {
+    showFooters = true;
+    invalidate();
+
+    assertThat(positionManager.absolutePosition(new ItemCoord(0, 0))).isEqualTo(1);
+    assertThat(positionManager.absolutePosition(new ItemCoord(0, 1))).isEqualTo(2);
+    assertThat(positionManager.absolutePosition(new ItemCoord(0, 2))).isEqualTo(3);
+    assertThat(positionManager.absolutePosition(new ItemCoord(0, 3))).isEqualTo(4);
+    assertThat(positionManager.absolutePosition(new ItemCoord(0, 4))).isEqualTo(5);
+    assertThat(positionManager.absolutePosition(new ItemCoord(0, 5))).isEqualTo(-1);
+    assertThat(positionManager.absolutePosition(new ItemCoord(0, 6))).isEqualTo(-1);
+
+    assertThat(positionManager.absolutePosition(new ItemCoord(1, 0))).isEqualTo(8);
+    assertThat(positionManager.absolutePosition(new ItemCoord(1, 1))).isEqualTo(9);
+    assertThat(positionManager.absolutePosition(new ItemCoord(1, 2))).isEqualTo(10);
+    assertThat(positionManager.absolutePosition(new ItemCoord(1, 3))).isEqualTo(11);
+    assertThat(positionManager.absolutePosition(new ItemCoord(1, 4))).isEqualTo(12);
     assertThat(positionManager.absolutePosition(new ItemCoord(1, 5))).isEqualTo(-1);
     assertThat(positionManager.absolutePosition(new ItemCoord(1, 6))).isEqualTo(-1);
 

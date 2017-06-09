@@ -7,12 +7,14 @@ import android.support.v4.util.ArrayMap;
 class PositionManager implements SectionedViewHolder.PositionDelegate {
 
   private final ArrayMap<Integer, Integer> headerLocationMap;
+  private final ArrayMap<Integer, Integer> footerLocationMap;
   private final ArrayMap<Integer, Boolean> collapsedSectionMap;
   private ItemProvider itemProvider;
   private boolean hasInvalidated;
 
   PositionManager() {
     this.headerLocationMap = new ArrayMap<>(0);
+    this.footerLocationMap = new ArrayMap<>(0);
     this.collapsedSectionMap = new ArrayMap<>(0);
   }
 
@@ -25,6 +27,7 @@ class PositionManager implements SectionedViewHolder.PositionDelegate {
     this.itemProvider = itemProvider;
     int count = 0;
     headerLocationMap.clear();
+    footerLocationMap.clear();
     for (int s = 0; s < itemProvider.getSectionCount(); s++) {
       int itemCount = itemProvider.getItemCount(s);
       if (collapsedSectionMap.get(s) != null) {
@@ -35,6 +38,10 @@ class PositionManager implements SectionedViewHolder.PositionDelegate {
       if (itemProvider.showHeadersForEmptySections() || (itemCount > 0)) {
         headerLocationMap.put(count, s);
         count += itemCount + 1;
+        if (itemProvider.showFooters()) {
+          footerLocationMap.put(count, s);
+          count += 1;
+        }
       }
     }
     return count;
@@ -45,8 +52,21 @@ class PositionManager implements SectionedViewHolder.PositionDelegate {
     return headerLocationMap.get(absolutePosition) != null;
   }
 
+  @Override
+  public boolean isFooter(int absolutePosition) {
+    return footerLocationMap.get(absolutePosition) != null;
+  }
+
   int sectionId(int absolutePosition) {
     Integer result = headerLocationMap.get(absolutePosition);
+    if (result == null) {
+      return -1;
+    }
+    return result;
+  }
+
+  int footerId(int absolutePosition) {
+    Integer result = footerLocationMap.get(absolutePosition);
     if (result == null) {
       return -1;
     }
@@ -56,6 +76,15 @@ class PositionManager implements SectionedViewHolder.PositionDelegate {
   int sectionHeaderIndex(int section) {
     for (Integer key : headerLocationMap.keySet()) {
       if (headerLocationMap.get(key) == section) {
+        return key;
+      }
+    }
+    return -1;
+  }
+
+  int sectionFooterIndex(int section) {
+    for (Integer key : footerLocationMap.keySet()) {
+      if (footerLocationMap.get(key) == section) {
         return key;
       }
     }

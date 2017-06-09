@@ -10,4 +10,6 @@ interface ItemProvider {
   int getItemCount(int sectionIndex);
 
   boolean showHeadersForEmptySections();
+
+  boolean showFooters();
 }

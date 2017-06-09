@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity {
 
   private MainAdapter adapter;
   private boolean hideEmpty;
+  private boolean showFooters = true;
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     list.setLayoutManager(manager);
     adapter.setLayoutManager(manager);
     adapter.shouldShowHeadersForEmptySections(hideEmpty);
+    adapter.shouldShowFooters(showFooters);
     list.setAdapter(adapter);
   }
 
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.main, menu);
     menu.findItem(R.id.hide_empty_sections).setChecked(!hideEmpty);
+    menu.findItem(R.id.show_footers).setChecked(showFooters);
     return super.onCreateOptionsMenu(menu);
   }
 
@@ -41,8 +44,12 @@ public class MainActivity extends AppCompatActivity {
     if (item.getItemId() == R.id.hide_empty_sections) {
       hideEmpty = !hideEmpty;
       adapter.shouldShowHeadersForEmptySections(hideEmpty);
-      adapter.notifyDataSetChanged();
       item.setChecked(!hideEmpty);
+      return true;
+    } else if (item.getItemId() == R.id.show_footers) {
+      showFooters = !showFooters;
+      adapter.shouldShowFooters(showFooters);
+      item.setChecked(!showFooters);
       return true;
     }
     return super.onOptionsItemSelected(item);

@@ -10,4 +10,11 @@
     android:title="@string/hide_empty_sections"
     app:showAsAction="never"/>
 
+  <item
+    android:id="@+id/show_footers"
+    android:checkable="true"
+    android:checked="true"
+    android:title="@string/show_footers"
+    app:showAsAction="never"/>
+
 </menu>
