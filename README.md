@@ -35,17 +35,17 @@ public class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH
 
   @Override
   public int getSectionCount() {
-    return 20; // number of sections.
+    return 20; // number of sections, you would probably base this on a data set such as a map
   }
 
   @Override
-  public int getItemCount(int section) {
-    return 8; // number of items in section (section index is parameter).
+  public int getItemCount(int sectionIndex) {
+    return 8; // number of items in section, you could also pull this from a map of lists
   }
 
   @Override
   public void onBindHeaderViewHolder(MainVH holder, int section, boolean expanded) {
-    // Setup header view.
+    // Setup header view
   }
 
   @Override
@@ -56,24 +56,40 @@ public class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH
     // 'absolutePosition' is index out of all non-header items.
     // See sample project for a visual of how these indices work.
   }
+  
+  @Override
+  public void onBindFooterViewHolder(MainVH holder, int section) {
+    // Setup footer view, if footers are enabled (see the next section)
+  }
 
   @Override
   public MainVH onCreateViewHolder(ViewGroup parent, int viewType) {
-    // Change inflated layout based on 'header'.
-    int layoutRes = viewType == VIEW_TYPE_HEADER ? R.layout.header : R.layout.normal;
+    // Change inflated layout based on type
+    int layoutRes;
+    switch(viewType) {
+      case VIEW_TYPE_HEADER:
+        layoutRes = R.layout.header;
+        break;
+      case VIEW_TYPE_FOOTER:
+        // if footers are enabled
+        layoutRes = R.layout.footer;
+        break;
+      default:
+        layoutRes = R.layout.normal_item;
+        break;
+    }
     View v = LayoutInflater.from(parent.getContext())
-      .inflate(layoutRes, parent, false);
+        .inflate(layoutRes, parent, false);
     return new MainVH(v);
   }
 
-  public static class MainVH 
-    extends SectionedViewHolder
-    implements View.OnClickListener {
+  public static class MainVH extends SectionedViewHolder
+        implements View.OnClickListener {
 
     public MainVH(View itemView) {
       super(itemView);
-      // Setup view holder.
-      // You'd want some views to be optional, e.g. for header vs. normal.
+      // Setup view holder. You'd want some views to be optional, e.g. the 
+      // header/footer will have views that normal item views do or do not have.
       itemView.setOnClickListener(this);
     }
     
@@ -81,6 +97,7 @@ public class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH
     public void onClick(View view) {
       // SectionedViewHolder exposes methods such as:
       boolean isHeader = isHeader();
+      boolean isFooter = isFooter();
       ItemCoord position = getRelativePosition();
       int section = position.section();
       int relativePos = position.relativePos();
@@ -91,17 +108,35 @@ public class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH
 
 ---
 
+## Enabling Footers
+
+Enabling footers is simple:
+
+```java
+adapter.shouldShowFooters(true);
+```
+
+You just have to make sure you handle footers in your view holder creation and view holder binding.
+
+---
+
 ## Expanding and Collapsing Sections
 
 Expanding and collapsing sections is easy:
 
 ```java
 MainAdapter adapter = // ...
+
 adapter.expandSection(int);
+
 adapter.collapseSection(int);
+
 adapter.toggleSectionExpanded(int);
+
 adapter.expandAllSections();
+
 adapter.collapseAllSections();
+
 boolean isExpanded = adapter.isSectionExpanded(int);
 ```
 
@@ -113,6 +148,7 @@ You can tell the adapter to hide sections which have no items.
 
 ```java
 MainAdapter adapter = // ...
+
 adapter.shouldShowHeadersForEmptySections(false);
 ```
 
@@ -135,6 +171,7 @@ you need to tell the adapter:
 
 ```java
 GridLayoutManager manager = // ...
+
 adapter.setLayoutManager(manager);
 ```
 
