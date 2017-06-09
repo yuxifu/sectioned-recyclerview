@@ -3,8 +3,8 @@ package com.afollestad.sectionedrecyclerview;
 @SuppressWarnings("WeakerAccess")
 public class ItemCoord {
 
-  private int section;
-  private int relativePos;
+  private final int section;
+  private final int relativePos;
 
   ItemCoord(int section, int relativePos) {
     this.section = section;

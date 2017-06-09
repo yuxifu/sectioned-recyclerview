@@ -25,14 +25,14 @@ public class MainActivity extends AppCompatActivity {
         new GridLayoutManager(this, getResources().getInteger(R.integer.grid_span));
     list.setLayoutManager(manager);
     adapter.setLayoutManager(manager);
-    adapter.shouldShowHeadersForEmptySections(false);
-    adapter.collapseAllSections();
+    adapter.shouldShowHeadersForEmptySections(hideEmpty);
     list.setAdapter(adapter);
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.main, menu);
+    menu.findItem(R.id.hide_empty_sections).setChecked(!hideEmpty);
     return super.onCreateOptionsMenu(menu);
   }
 
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
       hideEmpty = !hideEmpty;
       adapter.shouldShowHeadersForEmptySections(hideEmpty);
       adapter.notifyDataSetChanged();
-      item.setChecked(hideEmpty);
+      item.setChecked(!hideEmpty);
       return true;
     }
     return super.onOptionsItemSelected(item);

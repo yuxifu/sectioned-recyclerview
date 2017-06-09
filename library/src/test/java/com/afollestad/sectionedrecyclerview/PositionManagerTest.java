@@ -14,6 +14,7 @@ public class PositionManagerTest {
   @Before
   public void before() {
     positionManager = new PositionManager();
+    assertThat(positionManager.hasInvalidated()).isFalse();
     invalidate();
   }
 
@@ -162,10 +163,25 @@ public class PositionManagerTest {
   }
 
   @Test
+  public void test_collapse_all_sections() {
+    assertThat(invalidate()).isEqualTo(12);
+    positionManager.collapseAllSections();
+    assertThat(invalidate()).isEqualTo(2);
+  }
+
+  @Test
   public void test_expand_section() {
     positionManager.collapseSection(1);
     assertThat(invalidate()).isEqualTo(7);
     positionManager.expandSection(1);
+    assertThat(invalidate()).isEqualTo(12);
+  }
+
+  @Test
+  public void test_expand_all_sections() {
+    positionManager.collapseAllSections();
+    assertThat(invalidate()).isEqualTo(2);
+    positionManager.expandAllSections();
     assertThat(invalidate()).isEqualTo(12);
   }
 
@@ -177,6 +193,11 @@ public class PositionManagerTest {
     assertThat(invalidate()).isEqualTo(12);
     positionManager.toggleSectionExpanded(1);
     assertThat(invalidate()).isEqualTo(7);
+  }
+
+  @Test
+  public void test_has_invalidated() {
+    assertThat(positionManager.hasInvalidated()).isTrue();
   }
 
   @Test

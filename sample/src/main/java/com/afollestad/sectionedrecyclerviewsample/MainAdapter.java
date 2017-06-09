@@ -81,8 +81,8 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
 
     MainVH(View itemView, MainAdapter adapter) {
       super(itemView);
-      this.title = (TextView) itemView.findViewById(R.id.title);
-      this.caret = (ImageView) itemView.findViewById(R.id.caret);
+      this.title = itemView.findViewById(R.id.title);
+      this.caret = itemView.findViewById(R.id.caret);
       this.adapter = adapter;
       itemView.setOnClickListener(this);
     }

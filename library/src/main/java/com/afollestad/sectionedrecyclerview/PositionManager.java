@@ -9,13 +9,19 @@ class PositionManager implements SectionedViewHolder.PositionDelegate {
   private final ArrayMap<Integer, Integer> headerLocationMap;
   private final ArrayMap<Integer, Boolean> collapsedSectionMap;
   private ItemProvider itemProvider;
+  private boolean hasInvalidated;
 
   PositionManager() {
     this.headerLocationMap = new ArrayMap<>(0);
     this.collapsedSectionMap = new ArrayMap<>(0);
   }
 
+  boolean hasInvalidated() {
+    return hasInvalidated;
+  }
+
   int invalidate(ItemProvider itemProvider) {
+    this.hasInvalidated = true;
     this.itemProvider = itemProvider;
     int count = 0;
     headerLocationMap.clear();
@@ -117,6 +123,18 @@ class PositionManager implements SectionedViewHolder.PositionDelegate {
       expandSection(section);
     } else {
       collapseSection(section);
+    }
+  }
+
+  void expandAllSections() {
+    for (int i = 0; i < itemProvider.getSectionCount(); i++) {
+      expandSection(i);
+    }
+  }
+
+  void collapseAllSections() {
+    for (int i = 0; i < itemProvider.getSectionCount(); i++) {
+      collapseSection(i);
     }
   }
 

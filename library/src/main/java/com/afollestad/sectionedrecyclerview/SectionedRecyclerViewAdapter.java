@@ -11,25 +11,20 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-/**
- * @author Aidan Follestad (afollestad)
- */
+/** @author Aidan Follestad (afollestad) */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolder>
     extends RecyclerView.Adapter<VH> implements ItemProvider {
 
-  private static final String TAG = "SectionedRVAdapter";
-
   protected static final int VIEW_TYPE_HEADER = -2;
   protected static final int VIEW_TYPE_ITEM = -1;
-
+  private static final String TAG = "SectionedRVAdapter";
   private PositionManager positionManager;
   private GridLayoutManager layoutManager;
   private boolean showHeadersForEmptySections;
 
   public SectionedRecyclerViewAdapter() {
     positionManager = new PositionManager();
-    positionManager.invalidate(this);
   }
 
   public void notifySectionChanged(@IntRange(from = 0, to = Integer.MAX_VALUE) int section) {
@@ -46,7 +41,8 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
       Log.d(TAG, "There are no items in section " + section + " to notify.");
       return;
     }
-    Log.d(TAG, "Invalidating " + sectionItemCount + " items starting at index " + sectionHeaderIndex);
+    Log.d(
+        TAG, "Invalidating " + sectionItemCount + " items starting at index " + sectionHeaderIndex);
     notifyItemRangeChanged(sectionHeaderIndex, sectionItemCount);
   }
 
@@ -61,16 +57,18 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
   }
 
   public void expandAllSections() {
-    for (int i = 0; i < getSectionCount(); i++) {
-      positionManager.expandSection(i);
+    if (!positionManager.hasInvalidated()) {
+      positionManager.invalidate(this);
     }
+    positionManager.expandAllSections();
     notifyDataSetChanged();
   }
 
   public void collapseAllSections() {
-    for (int i = 0; i < getSectionCount(); i++) {
-      positionManager.collapseSection(i);
+    if (!positionManager.hasInvalidated()) {
+      positionManager.invalidate(this);
     }
+    positionManager.collapseAllSections();
     notifyDataSetChanged();
   }
 
@@ -78,7 +76,6 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
     positionManager.toggleSectionExpanded(section);
     notifyDataSetChanged();
   }
-
 
   public abstract int getSectionCount();
 
@@ -134,9 +131,7 @@ public abstract class SectionedRecyclerViewAdapter<VH extends SectionedViewHolde
     return 1;
   }
 
-  /**
-   * Converts an absolute position to a relative position and section.
-   */
+  /** Converts an absolute position to a relative position and section. */
   public ItemCoord getRelativePosition(int absolutePosition) {
     return positionManager.relativePosition(absolutePosition);
   }
