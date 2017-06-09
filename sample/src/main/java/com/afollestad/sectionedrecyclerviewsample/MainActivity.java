@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     } else if (item.getItemId() == R.id.show_footers) {
       showFooters = !showFooters;
       adapter.shouldShowFooters(showFooters);
-      item.setChecked(!showFooters);
+      item.setChecked(showFooters);
       return true;
     }
     return super.onOptionsItemSelected(item);
