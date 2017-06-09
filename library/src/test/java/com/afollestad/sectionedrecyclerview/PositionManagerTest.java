@@ -1,10 +1,10 @@
 package com.afollestad.sectionedrecyclerview;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import static com.google.common.truth.Truth.assertThat;
 import static junit.framework.Assert.fail;
+
+import org.junit.Before;
+import org.junit.Test;
 
 public class PositionManagerTest {
 
