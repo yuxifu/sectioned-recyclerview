@@ -55,7 +55,7 @@ public class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH
     // Setup non-header view.
     // 'section' is section index.
     // 'relativePosition' is index in this section.
-    // 'absolutePosition' is index out of all non-header items.
+    // 'absolutePosition' is index out of all items, including headers and footers.
     // See sample project for a visual of how these indices work.
   }
   
