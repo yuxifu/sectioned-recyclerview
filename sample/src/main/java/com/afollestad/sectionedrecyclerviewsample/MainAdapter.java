@@ -87,10 +87,10 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
 
   static class MainVH extends SectionedViewHolder implements View.OnClickListener {
 
-    Toast toast;
     final TextView title;
     final ImageView caret;
     final MainAdapter adapter;
+    Toast toast;
 
     MainVH(View itemView, MainAdapter adapter) {
       super(itemView);
@@ -102,7 +102,7 @@ class MainAdapter extends SectionedRecyclerViewAdapter<MainAdapter.MainVH> {
 
     @Override
     public void onClick(View view) {
-      if(isFooter()) {
+      if (isFooter()) {
         // ignore footer clicks
         return;
       }
