@@ -4,5 +4,7 @@
   <string name="hide_empty_sections">Hide Empty Sections</string>
   <string name="show_footers">Show Footers</string>
   <string name="click_headers_to_expand">Click Headers to Expand/Collapse</string>
+  <string name="home_options_expand_all_sections">Expand All</string>
+  <string name="home_options_collapse_all_sections">Collapse All</string>
 
 </resources>

@@ -30,12 +30,12 @@ class PositionManager implements SectionedViewHolder.PositionDelegate {
     footerLocationMap.clear();
     for (int s = 0; s < itemProvider.getSectionCount(); s++) {
       int itemCount = itemProvider.getItemCount(s);
-      if (collapsedSectionMap.get(s) != null) {
-        headerLocationMap.put(count, s);
-        count += 1;
-        continue;
-      }
       if (itemProvider.showHeadersForEmptySections() || (itemCount > 0)) {
+        if (collapsedSectionMap.get(s) != null) {
+          headerLocationMap.put(count, s);
+          count += 1;
+          continue;
+        }
         headerLocationMap.put(count, s);
         count += itemCount + 1;
         if (itemProvider.showFooters()) {

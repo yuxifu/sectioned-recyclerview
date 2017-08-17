@@ -51,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
       adapter.shouldShowFooters(showFooters);
       item.setChecked(showFooters);
       return true;
+    } else if (item.getItemId() == R.id.home_options_expand_all_sections) {
+      adapter.expandAllSections();
+      return true;
+    } else if (item.getItemId() == R.id.home_options_collapse_all_sections) {
+      adapter.collapseAllSections();
+      return true;
     }
     return super.onOptionsItemSelected(item);
   }

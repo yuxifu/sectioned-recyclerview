@@ -17,4 +17,14 @@
     android:title="@string/show_footers"
     app:showAsAction="never"/>
 
+  <item
+      android:id="@+id/home_options_expand_all_sections"
+      android:title="@string/home_options_expand_all_sections"
+      app:showAsAction="never"/>
+
+  <item
+      android:id="@+id/home_options_collapse_all_sections"
+      android:title="@string/home_options_collapse_all_sections"
+      app:showAsAction="never"/>
+
 </menu>
